@@ -1,0 +1,12 @@
+/* MagicMirror/modules/MMM-AlphaESS/MMM-AlphaESS.css */
+.alphaess-wrapper { width: 280px; }
+.alphaess-table { width: 100%; border-collapse: collapse; border-spacing: 0; }
+.alphaess-table td { padding: 1px 3px; white-space: nowrap; vertical-align: middle; }
+.alphaess-table td.icon-cell { width: 20px; text-align: center; padding-right: 4px; }
+.alphaess-table td.icon-cell i.fas { margin-right: 0; opacity: 0.85; }
+.alphaess-table td.label-cell { padding-left: 0; padding-right: 4px; }
+.alphaess-table td.value-cell { text-align: right; width: 75px; font-weight: bold; padding-left: 0; }
+.alphaess-wrapper .error { color: #ff8a8a; border: 1px solid #553333; background-color: rgba(34, 17, 17, 0.8); padding: 8px 10px; border-radius: 4px; line-height: 1.4; max-width: 90%; margin: 0 auto; }
+.alphaess-wrapper .error .error-message { display: block; font-weight: bold; word-break: break-word; }
+.alphaess-wrapper .error .error-hint { display: block; margin-top: 6px; font-size: 0.9em; color: #cccccc; font-style: italic; font-weight: normal; }
+.alphaess-wrapper .alert { color: #ffd700; background-color: rgba(50, 40, 0, 0.7); border: 1px solid #886600; padding: 8px 10px; border-radius: 4px; }

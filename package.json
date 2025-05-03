@@ -1,0 +1,11 @@
+{
+    "name": "mmm-alphaess",
+    "version": "1.0.0",
+    "description": "Magic Mirror module to display AlphaESS solar data.",
+    "main": "MMM-AlphaESS.js",
+    "dependencies": {
+      "node-fetch": "^2.6.1"
+    },
+    "author": "El-Chloro",
+    "license": "MIT"
+  }
