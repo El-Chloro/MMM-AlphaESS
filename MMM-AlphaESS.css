@@ -15,7 +15,7 @@
 
 /* Styling für eine einzelne Daten-Box */
 .data-box {
-  flex: 1 1 125px; /* Flex-Eigenschaften: wachsen, schrumpfen, Basis-Breite */
+  flex: 1 1 125px; /* Flex-Eigenschaften: wachsen, schrumpfen, Basis-Breite für kleine Boxen */
   background-color: #111; /* Dunkler Hintergrund für die Box */
   border-radius: 8px;
   padding: 10px;
@@ -23,10 +23,13 @@
   flex-direction: column;
   align-items: center; /* Inhalt zentrieren */
   justify-content: center;
-  border-bottom: 4px solid #444; /* Standard-Farbrand unten */
-  transition: border-color 0.5s ease; /* Weicher Übergang für Farbänderungen */
   min-height: 95px; /* Mindesthöhe für einheitliches Aussehen */
   box-sizing: border-box;
+}
+
+/* Spezielles Styling für die breite Akku-Box */
+.data-box.full-width {
+  flex-basis: 100%; /* Nimmt die gesamte Breite ein */
 }
 
 /* Icon innerhalb der Box */
@@ -53,6 +56,26 @@
   letter-spacing: 0.5px;
   margin-top: 4px; /* Abstand nach oben */
 }
+
+/* NEU: Container für den prozentualen Ladebalken */
+.bar-container {
+  width: 90%; /* Etwas schmaler als die Box selbst */
+  height: 10px; /* Dickerer Balken */
+  background-color: #333; /* Hintergrund des leeren Balkens */
+  border-radius: 5px;
+  margin-top: 12px;
+  overflow: hidden; /* Stellt sicher, dass der innere Radius korrekt ist */
+}
+
+/* NEU: Der farbige, wachsende Füllstand des Balkens */
+.bar-fill {
+  height: 100%;
+  width: 0%; /* Breite wird dynamisch per JS gesetzt */
+  border-radius: 5px;
+  /* Weiche Übergänge für Farb- und Breitenänderungen */
+  transition: width 0.5s ease-in-out, background-color 0.5s ease;
+}
+
 
 /* Styling für Fehler- und Warnmeldungen (unverändert) */
 .alphaess-wrapper .error {
