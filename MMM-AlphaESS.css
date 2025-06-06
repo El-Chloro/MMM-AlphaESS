@@ -1,86 +1,87 @@
 /* MagicMirror/modules/MMM-AlphaESS/MMM-AlphaESS.css */
 
+/* Haupt-Wrapper für das Modul */
 .alphaess-wrapper {
-    width: 280px; /* Breite des Moduls */
-    /* font-size: 18px; */ /* Basis-Schriftgröße hier anpassen, falls nötig */
-  }
-  
-  .alphaess-table {
-    width: 100%;
-    border-collapse: collapse;
-    border-spacing: 0;
-    /* Schriftgröße für die Tabelle - anpassen nach Bedarf */
-    font-size: 110%; /* z.B. 95% der Basis-Schriftgröße */
-    line-height: 1.3;
-  }
-  
-  /* Zellen-Styling für reduzierten Abstand */
-  .alphaess-table td {
-    padding: 2px 3px; /* Geringes Padding oben/unten, links/rechts */
-    white-space: nowrap;
-    vertical-align: middle; /* Vertikale Ausrichtung */
-  }
-  
-  /* Icon-Zelle */
-  .alphaess-table td.icon-cell {
-     width: 22px; /* Breite für Icons */
-     text-align: center;
-     padding-right: 5px; /* Abstand nach dem Icon */
-  }
-  .alphaess-table td.icon-cell i.fas {
-    font-size: 0.95em; /* Icongröße relativ zur Schrift */
-    margin-right: 0;
-    opacity: 0.85; /* Leichte Transparenz für Icons */
-  }
-  
-  /* Label-Zelle */
-  .alphaess-table td.label-cell {
-    padding-left: 0; /* Kein linker Abstand */
-    padding-right: 5px; /* Abstand nach dem Label-Text */
-  }
-  .alphaess-table span.label-text {
-     /* Hier spezielle Stile für Label-Text, falls nötig */
-  }
-  
-  /* Wert-Zelle */
-  .alphaess-table td.value-cell {
-    text-align: right; /* Rechtsbündig */
-    width: 80px; /* Feste Breite für Werte (Anpassen!) */
-    font-weight: bold; /* Werte hervorheben */
-    padding-left: 0; /* Kein linker Abstand */
-  }
-  .alphaess-table span.value-text {
-    /* Hier spezielle Stile für Wert-Text, falls nötig */
-  }
-  
-  /* Styling für Fehler- und Warnmeldungen */
-  .alphaess-wrapper .error {
-      color: #ff8a8a; /* Rote Schrift für Fehler */
-      border: 1px solid #553333;
-      background-color: rgba(34, 17, 17, 0.8); /* Dunkelroter transparenter Hintergrund */
-      padding: 8px 10px;
-      border-radius: 4px;
-      line-height: 1.4;
-      max-width: 90%; /* Maximale Breite begrenzen */
-      margin: 0 auto; /* Zentrieren, falls Breite begrenzt ist */
-  }
-  .alphaess-wrapper .error .error-message {
-      display: block;
-      font-weight: bold;
-      word-break: break-word; /* Lange Fehlermeldungen umbrechen */
-  }
-  .alphaess-wrapper .error .error-hint {
-      display: block;
-      margin-top: 6px;
-      font-size: 0.9em;
-      color: #cccccc; /* Hellgraue Schrift für Hinweise */
-      font-style: italic;
-      font-weight: normal;
-  }
-  .alphaess-wrapper .alert { /* Für Konfigurationswarnung */
-      color: #ffd700; /* Gold/Gelb */
-       background-color: rgba(50, 40, 0, 0.7);
-       border: 1px solid #886600;
-       padding: 8px 10px;
-       border-radius: 4px;
-  }
+  width: 280px; /* Breite des gesamten Moduls */
+}
+
+/* Container für die Daten-Boxen */
+.alphaess-wrapper .box-container {
+  display: flex;
+  flex-wrap: wrap; /* Boxen umbrechen lassen */
+  gap: 10px; /* Abstand zwischen den Boxen */
+  width: 100%;
+}
+
+/* Styling für eine einzelne Daten-Box */
+.data-box {
+  flex: 1 1 125px; /* Flex-Eigenschaften: wachsen, schrumpfen, Basis-Breite */
+  background-color: #111; /* Dunkler Hintergrund für die Box */
+  border-radius: 8px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Inhalt zentrieren */
+  justify-content: center;
+  border-bottom: 4px solid #444; /* Standard-Farbrand unten */
+  transition: border-color 0.5s ease; /* Weicher Übergang für Farbänderungen */
+  min-height: 95px; /* Mindesthöhe für einheitliches Aussehen */
+  box-sizing: border-box;
+}
+
+/* Icon innerhalb der Box */
+.data-box .box-icon .fas {
+  font-size: 1.2em; /* Größe des Icons */
+  color: #eee;
+  opacity: 0.9;
+  margin-bottom: 8px; /* Abstand nach unten */
+}
+
+/* Wert-Anzeige (z.B. 85.3 %) */
+.data-box .box-value {
+  font-size: 1.5em; /* Große Schrift für den Wert */
+  font-weight: 700; /* Fett */
+  color: #fff;
+  line-height: 1.1;
+}
+
+/* Label (z.B. "Akku") */
+.data-box .box-label {
+  font-size: 0.7em; /* Kleine Schrift für die Beschreibung */
+  color: #bbb;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 4px; /* Abstand nach oben */
+}
+
+/* Styling für Fehler- und Warnmeldungen (unverändert) */
+.alphaess-wrapper .error {
+  color: #ff8a8a;
+  border: 1px solid #553333;
+  background-color: rgba(34, 17, 17, 0.8);
+  padding: 8px 10px;
+  border-radius: 4px;
+  line-height: 1.4;
+  max-width: 90%;
+  margin: 0 auto;
+}
+.alphaess-wrapper .error .error-message {
+  display: block;
+  font-weight: bold;
+  word-break: break-word;
+}
+.alphaess-wrapper .error .error-hint {
+  display: block;
+  margin-top: 6px;
+  font-size: 0.9em;
+  color: #cccccc;
+  font-style: italic;
+  font-weight: normal;
+}
+.alphaess-wrapper .alert {
+  color: #ffd700;
+  background-color: rgba(50, 40, 0, 0.7);
+  border: 1px solid #886600;
+  padding: 8px 10px;
+  border-radius: 4px;
+}
