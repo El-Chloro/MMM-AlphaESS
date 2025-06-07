@@ -1,0 +1,11 @@
+{
+  "LOADING": "Lädt...",
+  "ERROR_CONFIG": "Bitte konfiguriere `appId`, `appSecret` und `sysSn`.",
+  "ERROR_FETCH": "Fehler beim Abrufen:",
+  "WAITING_FOR_DATA": "Warte auf Daten...",
+  "LOAD": "Verbrauch",
+  "PV_NOW": "PV Aktuell",
+  "LOAD_DAY": "Tagesverbrauch",
+  "PV_DAY": "Tages-PV",
+  "BATTERY": "Akku"
+}

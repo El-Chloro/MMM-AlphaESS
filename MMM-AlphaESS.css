@@ -1,98 +1,85 @@
 /* MagicMirror/modules/MMM-AlphaESS/MMM-AlphaESS.css */
 
-/* Haupt-Wrapper für das Modul */
 .alphaess-wrapper {
-  width: 280px; /* Breite des gesamten Moduls */
+  width: 280px; 
 }
 
-/* Container für die Daten-Boxen */
 .alphaess-wrapper .box-container {
   display: flex;
-  flex-wrap: wrap; /* Boxen umbrechen lassen */
-  gap: 10px; /* Abstand zwischen den Boxen */
+  flex-wrap: wrap;
+  gap: 10px;
   width: 100%;
 }
 
-/* Styling für eine einzelne Daten-Box */
 .data-box {
-  flex: 1 1 125px; /* Flex-Eigenschaften: wachsen, schrumpfen, Basis-Breite für kleine Boxen */
-  background-color: #111; /* Dunkler Hintergrund für die Box */
+  flex: 1 1 125px; 
+  background-color: #111;
   border-radius: 8px;
   padding: 10px;
   display: flex;
   flex-direction: column;
-  align-items: center; /* Inhalt zentrieren */
+  align-items: center; 
   justify-content: center;
-  min-height: 95px; /* Mindesthöhe für einheitliches Aussehen */
+  min-height: 95px; 
   box-sizing: border-box;
 }
 
-/* Spezielles Styling für die breite Akku-Box */
 .data-box.full-width {
-  flex-basis: 100%; /* Nimmt die gesamte Breite ein */
+  flex-basis: 100%; 
 }
 
-/* Icon innerhalb der Box */
 .data-box .box-icon .fas {
-  font-size: 1.2em; /* Größe des Icons */
+  font-size: 1.2em; 
   color: #eee;
   opacity: 0.9;
-  margin-bottom: 8px; /* Abstand nach unten */
+  margin-bottom: 8px; 
 }
 
-/* Wert-Anzeige (z.B. 85.3 %) */
 .data-box .box-value {
-  font-size: 1.5em; /* Große Schrift für den Wert */
-  font-weight: 700; /* Fett */
+  font-size: 1.5em; 
+  font-weight: 700; 
   color: #fff;
   line-height: 1.1;
 }
 
-/* Label (z.B. "Akku") */
 .data-box .box-label {
-  font-size: 0.7em; /* Kleine Schrift für die Beschreibung */
+  font-size: 0.7em; 
   color: #bbb;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  margin-top: 4px; /* Abstand nach oben */
+  margin-top: 4px; 
 }
 
-/* Container für die prozentualen Balken */
 .bar-container {
-  display: flex; /* NEU: Flexbox für die Segmente */
-  width: 90%; /* Etwas schmaler als die Box selbst */
-  height: 10px; /* Dickerer Balken */
-  background-color: #333; /* Hintergrund des leeren Balkens */
+  display: flex; 
+  width: 90%;
+  height: 10px; 
+  background-color: #333; 
   border-radius: 5px;
   margin-top: 12px;
-  overflow: hidden; /* Stellt sicher, dass der innere Radius korrekt ist */
+  overflow: hidden; 
 }
 
-/* Der einfarbige Füllstand des Akku-Balkens */
 .bar-fill {
   height: 100%;
-  width: 0%; /* Breite wird dynamisch per JS gesetzt */
+  width: 0%; 
   border-radius: 5px;
-  /* Weiche Übergänge für Farb- und Breitenänderungen */
   transition: width 0.5s ease-in-out, background-color 0.5s ease;
 }
 
-/* NEU: Generischer Stil für die Segmente des Verbrauch-Balkens */
 .bar-segment {
   height: 100%;
   transition: width 0.5s ease-in-out;
 }
 
-/* NEU: Farbdefinitionen für die Segmente */
 .bar-segment.green {
-  background-color: #8BC34A; /* Grün für Eigenverbrauch */
+  background-color: #8BC34A; 
 }
+
 .bar-segment.orange {
-  background-color: #FF9800; /* Orange für Netzbezug */
+  background-color: #FF9800; 
 }
 
-
-/* Styling für Fehler- und Warnmeldungen (unverändert) */
 .alphaess-wrapper .error {
   color: #ff8a8a;
   border: 1px solid #553333;
@@ -103,11 +90,13 @@
   max-width: 90%;
   margin: 0 auto;
 }
+
 .alphaess-wrapper .error .error-message {
   display: block;
   font-weight: bold;
   word-break: break-word;
 }
+
 .alphaess-wrapper .error .error-hint {
   display: block;
   margin-top: 6px;
@@ -116,6 +105,7 @@
   font-style: italic;
   font-weight: normal;
 }
+
 .alphaess-wrapper .alert {
   color: #ffd700;
   background-color: rgba(50, 40, 0, 0.7);

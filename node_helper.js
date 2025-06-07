@@ -1,7 +1,7 @@
 // MagicMirror/modules/MMM-AlphaESS/node_helper.js
 /* global require, module, console, setTimeout, clearTimeout */
 const NodeHelper = require("node_helper");
-let fetch; // Wird dynamisch importiert
+let fetch; // Will be imported dynamically
 const crypto = require("crypto");
 
 console.log("<<<<< MMM-AlphaESS node_helper.js: LOADING FILE >>>>>");
@@ -10,17 +10,17 @@ module.exports = NodeHelper.create({
 	start: async function() {
 		console.log("<<<<< MMM-AlphaESS node_helper: start() function CALLED >>>>>");
 		this.config = null;
-		this.realtimeData = null; // Speicher für Echtzeitdaten
-		this.summaryData = null;  // Speicher für Tages-Summen
+		this.realtimeData = null; // Storage for real-time data
+		this.summaryData = null;  // Storage for daily summary data
 		this.fetchRealtimeTimer = null;
-		this.fetchSummaryTimer = null; // Timer für Summen
+		this.fetchSummaryTimer = null; // Timer for summary data
 		this.fetchRealtimeInProgress = false;
-		this.fetchSummaryInProgress = false; // Flag für Summen
+		this.fetchSummaryInProgress = false; // Flag for summary data
 		this.lastApiError = null;
 
 		console.log("[MMM-AlphaESS node_helper] Attempting to dynamically import node-fetch...");
 		try {
-			// Prüft, ob fetch schon importiert wurde (bei Neustarts möglich)
+			// Checks if fetch has already been imported (possible on restarts)
 			if (!fetch) {
 				 fetch = (await import('node-fetch')).default;
 				 console.log("[MMM-AlphaESS node_helper] SUCCESS: node-fetch imported dynamically.");
@@ -29,8 +29,8 @@ module.exports = NodeHelper.create({
 			}
 		} catch (err) {
 			console.error("<<<<< MMM-AlphaESS node_helper: CRITICAL ERROR importing node-fetch! >>>>>", err);
-			// Speichert den Fehler, um ihn zu senden, sobald die Verbindung zum Frontend steht
-			this.lastApiError = "Node Helper Error: node-fetch konnte nicht geladen werden. Prüfe Logs.";
+			// Stores the error to send it as soon as the connection to the frontend is established
+			this.lastApiError = "Node Helper Error: node-fetch could not be loaded. Check logs.";
 		}
 		console.log("[MMM-AlphaESS node_helper] start() function finished.");
 	},
@@ -38,67 +38,67 @@ module.exports = NodeHelper.create({
 	stop: function() {
 		console.log("<<<<< MMM-AlphaESS node_helper: stop() function CALLED >>>>>");
 		clearTimeout(this.fetchRealtimeTimer);
-		clearTimeout(this.fetchSummaryTimer); // Auch Summary Timer stoppen
+		clearTimeout(this.fetchSummaryTimer); // Stop the summary timer as well
 		this.fetchRealtimeInProgress = false;
 		this.fetchSummaryInProgress = false;
 	},
 
-	// Verarbeitet Nachrichten vom Frontend (MMM-AlphaESS.js)
+	// Processes messages from the frontend (MMM-AlphaESS.js)
 	socketNotificationReceived: function(notification, payload) {
 		console.log(`<<<<< MMM-AlphaESS node_helper: socketNotificationReceived CALLED - Notification: ${notification} >>>>>`);
-		// console.log("[MMM-AlphaESS node_helper] Payload received:", JSON.stringify(payload, null, 2)); // Optional: Payload loggen
+		// console.log("[MMM-AlphaESS node_helper] Payload received:", JSON.stringify(payload, null, 2)); // Optional: Log payload
 
 		if (notification === "CONFIG" && payload) {
 			console.log("[MMM-AlphaESS node_helper] CONFIG notification received. Processing...");
 			this.config = payload;
-			// Setzt Intervalle aus der Konfiguration oder Standardwerte
+			// Sets intervals from configuration or default values
 			this.config.updateIntervalRealtime = Math.max(this.config.updateIntervalRealtime || 60 * 1000, 30000); // Min 30s
 			this.config.updateIntervalSummary = Math.max(this.config.updateIntervalSummary || 10 * 60 * 1000, 60000); // Min 60s
 
-			// Prüft, ob 'fetch' erfolgreich importiert wurde
+			// Checks if 'fetch' was imported successfully
 			if (!fetch) {
 				 console.error("[MMM-AlphaESS node_helper] ERROR: fetch not available when processing CONFIG.");
-				 this.sendErrorToFrontend("Node Helper Error: fetch nicht verfügbar.");
-				 return; // Bricht ab, wenn fetch fehlt
+				 this.sendErrorToFrontend("Node Helper Error: fetch not available.");
+				 return; // Aborts if fetch is missing
 			}
 
 			console.log(`[MMM-AlphaESS node_helper] Config processed. Realtime Interval: ${this.config.updateIntervalRealtime}, Summary Interval: ${this.config.updateIntervalSummary}`);
-			// Startet die Abruf-Zeitpläne für beide Datentypen
+			// Starts the fetch schedules for both data types
 			this.scheduleRealtimeUpdate();
-			this.scheduleSummaryUpdate(); // Startet auch den Summary-Abruf
+			this.scheduleSummaryUpdate(); // Also starts the summary fetch
 		} else {
 			 console.log(`[MMM-AlphaESS node_helper] Notification '${notification}' ignored or payload missing.`);
 		}
 	},
 
-	// Sendet die gesammelten Daten an das Frontend
+	// Sends the collected data to the frontend
 	sendDataToFrontend: function() {
-		// Sendet nur, wenn mindestens ein Datensatz vorhanden ist
+		// Only sends if at least one data set is present
 		if (this.realtimeData || this.summaryData) {
 			console.log("[MMM-AlphaESS node_helper] Preparing to send DATA_RESULT to frontend.");
-			// Sendet immer beide Teile, auch wenn einer null ist
+			// Always sends both parts, even if one is null
 			this.sendSocketNotification("DATA_RESULT", {
 				realtime: this.realtimeData,
 				summary: this.summaryData
 			});
 			 console.log("[MMM-AlphaESS node_helper] DATA_RESULT sent.");
-			 // Löscht den letzten Fehler, wenn Daten erfolgreich gesendet wurden
+			 // Clears the last error if data was sent successfully
 			 if(this.realtimeData && this.summaryData) { this.lastApiError = null; }
 
 		} else if (this.lastApiError) {
-			 // Sendet den letzten Fehler, wenn keine Daten vorhanden sind
+			 // Sends the last error if no data is available
 			 this.sendErrorToFrontend(this.lastApiError);
 		} else {
 			 console.log("[MMM-AlphaESS node_helper] No data and no error to send.");
 		}
 	},
 
-	 // Sendet eine Fehlermeldung ans Frontend
+	 // Sends an error message to the frontend
 	 sendErrorToFrontend: function(errorMessage) {
-		// Verhindert das wiederholte Senden des exakt gleichen Fehlers
+		// Prevents sending the exact same error repeatedly
 		if (this.lastApiError !== errorMessage) {
 			 console.error("[MMM-AlphaESS node_helper] Storing and preparing to send API_ERROR:", errorMessage);
-			 this.lastApiError = errorMessage; // Speichert den aktuellen Fehler
+			 this.lastApiError = errorMessage; // Stores the current error
 			 this.sendSocketNotification("API_ERROR", { message: errorMessage });
 			 console.log("[MMM-AlphaESS node_helper] API_ERROR notification sent.");
 		} else {
@@ -106,119 +106,119 @@ module.exports = NodeHelper.create({
 		}
 	 },
 
-	// Plant den nächsten Abruf für Echtzeitdaten
+	// Schedules the next fetch for real-time data
 	scheduleRealtimeUpdate: function() {
 		console.log("[MMM-AlphaESS node_helper] scheduleRealtimeUpdate CALLED.");
-		clearTimeout(this.fetchRealtimeTimer); // Löscht alten Timer
+		clearTimeout(this.fetchRealtimeTimer); // Clears old timer
 		this.fetchRealtimeTimer = null;
-		if (this.fetchRealtimeInProgress) { console.log("[MMM-AlphaESS node_helper] Realtime fetch already in progress, skipping."); return; } // Verhindert Überlappung
+		if (this.fetchRealtimeInProgress) { console.log("[MMM-AlphaESS node_helper] Realtime fetch already in progress, skipping."); return; } // Prevents overlap
 		console.log("[MMM-AlphaESS node_helper] Calling fetchRealtimeData.");
-		this.fetchRealtimeData(); // Führt Abruf sofort aus
-		// Setzt neuen Timer für den nächsten Abruf
+		this.fetchRealtimeData(); // Executes fetch immediately
+		// Sets a new timer for the next fetch
 		this.fetchRealtimeTimer = setTimeout(() => { this.scheduleRealtimeUpdate(); }, this.config.updateIntervalRealtime);
 	},
 
-	// Plant den nächsten Abruf für Summen-Daten
+	// Schedules the next fetch for summary data
 	 scheduleSummaryUpdate: function() {
 		console.log("[MMM-AlphaESS node_helper] scheduleSummaryUpdate CALLED.");
-		clearTimeout(this.fetchSummaryTimer); // Löscht alten Timer
+		clearTimeout(this.fetchSummaryTimer); // Clears old timer
 		this.fetchSummaryTimer = null;
-		if (this.fetchSummaryInProgress) { console.log("[MMM-AlphaESS node_helper] Summary fetch already in progress, skipping."); return; } // Verhindert Überlappung
+		if (this.fetchSummaryInProgress) { console.log("[MMM-AlphaESS node_helper] Summary fetch already in progress, skipping."); return; } // Prevents overlap
 		console.log("[MMM-AlphaESS node_helper] Calling fetchSummaryData.");
-		this.fetchSummaryData(); // Führt Abruf sofort aus
+		this.fetchSummaryData(); // Executes fetch immediately
 		console.log("[MMM-AlphaESS node_helper] Scheduling next summary update in " + this.config.updateIntervalSummary + "ms");
-		// Setzt neuen Timer für den nächsten Abruf
+		// Sets a new timer for the next fetch
 		this.fetchSummaryTimer = setTimeout(() => { this.scheduleSummaryUpdate(); }, this.config.updateIntervalSummary);
 	},
 
-	// Generische Funktion zum Abrufen von Daten von der API
+	// Generic function to fetch data from the API
 	fetchApi: async function(endpointUrl, queryParams = {}) {
-		 // Prüft auf vollständige Konfiguration und Verfügbarkeit von fetch
-		 if (!this.config || !this.config.appId || !this.config.appSecret || !this.config.sysSn) { throw new Error("Konfiguration unvollständig (fetchApi)."); }
-		 if (!fetch) { throw new Error("fetch ist nicht verfügbar (fetchApi)."); }
+		 // Checks for complete configuration and availability of fetch
+		 if (!this.config || !this.config.appId || !this.config.appSecret || !this.config.sysSn) { throw new Error("Configuration incomplete (fetchApi)."); }
+		 if (!fetch) { throw new Error("fetch is not available (fetchApi)."); }
 
-		 // Authentifizierungsdaten vorbereiten
+		 // Prepare authentication data
 		 const appId = this.config.appId;
 		 const appSecret = this.config.appSecret;
 		 const sysSn = this.config.sysSn;
 		 const timeStamp = Math.floor(Date.now() / 1000);
 		 const stringToSign = `${appId}${appSecret}${timeStamp}`;
-		 const sign = crypto.createHash('sha512').update(stringToSign).digest('hex'); // SHA512 Signatur
+		 const sign = crypto.createHash('sha512').update(stringToSign).digest('hex'); // SHA512 signature
 
-		 // URL und Header zusammenbauen
-		 queryParams.sysSn = queryParams.sysSn || sysSn; // Fügt sysSn hinzu, falls nicht vorhanden
+		 // Assemble URL and headers
+		 queryParams.sysSn = queryParams.sysSn || sysSn; // Adds sysSn if not present
 		 const queryString = new URLSearchParams(queryParams).toString();
 		 const fullUrl = `${endpointUrl}?${queryString}`;
 		 const headers = { 'appId': appId, 'timeStamp': timeStamp.toString(), 'sign': sign };
 
-		 // API-Aufruf durchführen
+		 // Perform API call
 		 console.log(`[MMM-AlphaESS node_helper] Fetching API: ${endpointUrl.split('/').pop()} for SN: ${sysSn}`);
-		 const response = await fetch(fullUrl, { method: 'GET', headers: headers, timeout: 20000 }); // 20 Sekunden Timeout
+		 const response = await fetch(fullUrl, { method: 'GET', headers: headers, timeout: 20000 }); // 20 second timeout
 		 console.log(`[MMM-AlphaESS node_helper] API Response Status (${endpointUrl.split('/').pop()}): ${response.status} ${response.statusText}`);
 
-		 // Fehlerbehandlung für die Antwort
-		 if (!response.ok) { // Prüft auf HTTP-Fehler (z.B. 4xx, 5xx)
+		 // Handle the response
+		 if (!response.ok) { // Checks for HTTP errors (e.g., 4xx, 5xx)
 			 const errorBody = await response.text();
 			 console.error(`[MMM-AlphaESS node_helper] API request failed (${endpointUrl.split('/').pop()}) Status ${response.status}. Body: ${errorBody}`);
-			 throw new Error(`API Fehler (${response.status}, ${endpointUrl.split('/').pop()}): ${errorBody || response.statusText}`);
+			 throw new Error(`API Error (${response.status}, ${endpointUrl.split('/').pop()}): ${errorBody || response.statusText}`);
 		 }
 
-		 const data = await response.json(); // Antwort als JSON parsen
+		 const data = await response.json(); // Parse response as JSON
 
-		 // Prüft auf anwendungsspezifische Fehler im JSON (Code != 200)
+		 // Checks for application-specific errors in the JSON (code != 200)
 		 if (data.code !== 200) {
 			 console.error(`[MMM-AlphaESS node_helper] API returned error code ${data.code}: ${data.msg} (${endpointUrl.split('/').pop()})`);
-			 throw new Error(`API meldet Fehler (${data.code}, ${endpointUrl.split('/').pop()}): ${data.msg}`);
+			 throw new Error(`API reports error (${data.code}, ${endpointUrl.split('/').pop()}): ${data.msg}`);
 		 }
 
 		 console.log(`[MMM-AlphaESS node_helper] API call successful (${endpointUrl.split('/').pop()})`);
-		 return data.data; // Gibt den 'data'-Teil der API-Antwort zurück
+		 return data.data; // Returns the 'data' part of the API response
 	},
 
-	// Ruft die Echtzeitdaten ab
+	// Fetches the real-time data
 	fetchRealtimeData: async function() {
 		console.log("[MMM-AlphaESS node_helper] fetchRealtimeData CALLED.");
-		if (this.fetchRealtimeInProgress) { return; } // Verhindert parallele Ausführung
+		if (this.fetchRealtimeInProgress) { return; } // Prevents parallel execution
 		console.log("[MMM-AlphaESS node_helper] fetchRealtimeData: Setting fetchInProgress = true.");
 		this.fetchRealtimeInProgress = true;
 		try {
 			console.log("[MMM-AlphaESS node_helper] fetchRealtimeData: Calling fetchApi for getLastPowerData...");
-			const data = await this.fetchApi('https://openapi.alphaess.com/api/getLastPowerData'); // Ruft generische Funktion
+			const data = await this.fetchApi('https://openapi.alphaess.com/api/getLastPowerData'); // Calls generic function
 			console.log("[MMM-AlphaESS node_helper] fetchRealtimeData: API call successful. Storing data.");
-			this.realtimeData = data; // Speichert die Daten
-			this.sendDataToFrontend(); // Sendet Update ans Frontend
+			this.realtimeData = data; // Stores the data
+			this.sendDataToFrontend(); // Sends update to the frontend
 		} catch (error) {
 			console.error("[MMM-AlphaESS node_helper] fetchRealtimeData: ERROR during fetch:", error.message);
-			this.sendErrorToFrontend(error.message); // Sendet Fehler ans Frontend
+			this.sendErrorToFrontend(error.message); // Sends error to the frontend
 		} finally {
-			// Wird immer ausgeführt, setzt Flag zurück
+			// Is always executed, resets the flag
 			console.log("[MMM-AlphaESS node_helper] fetchRealtimeData: FINALLY block. Setting fetchInProgress = false.");
 			this.fetchRealtimeInProgress = false;
 		}
 	},
 
-	// Ruft die Summen-Daten ab
+	// Fetches the summary data
 	fetchSummaryData: async function() {
 		console.log("[MMM-AlphaESS node_helper] fetchSummaryData CALLED.");
-		if (this.fetchSummaryInProgress) { return; } // Verhindert parallele Ausführung
+		if (this.fetchSummaryInProgress) { return; } // Prevents parallel execution
 		console.log("[MMM-AlphaESS node_helper] fetchSummaryData: Setting fetchInProgress = true.");
 		this.fetchSummaryInProgress = true;
 		try {
 			console.log("[MMM-AlphaESS node_helper] fetchSummaryData: Calling fetchApi for getSumDataForCustomer...");
-			const data = await this.fetchApi('https://openapi.alphaess.com/api/getSumDataForCustomer'); // Ruft generische Funktion
+			const data = await this.fetchApi('https://openapi.alphaess.com/api/getSumDataForCustomer'); // Calls generic function
 			console.log("[MMM-AlphaESS node_helper] fetchSummaryData: API call successful. Storing data.");
-			this.summaryData = data; // Speichert die Daten
-			this.sendDataToFrontend(); // Sendet Update ans Frontend
+			this.summaryData = data; // Stores the data
+			this.sendDataToFrontend(); // Sends update to the frontend
 		} catch (error) {
 			console.error("[MMM-AlphaESS node_helper] fetchSummaryData: ERROR during fetch:", error.message);
-			this.sendErrorToFrontend(error.message); // Sendet Fehler ans Frontend
+			this.sendErrorToFrontend(error.message); // Sends error to the frontend
 		} finally {
-			// Wird immer ausgeführt, setzt Flag zurück
+			// Is always executed, resets the flag
 			console.log("[MMM-AlphaESS node_helper] fetchSummaryData: FINALLY block. Setting fetchInProgress = false.");
 			this.fetchSummaryInProgress = false;
 		}
 	},
 });
 
-// Loggt, wenn die Node Helper Datei erfolgreich geparsed wurde
+// Logs when the Node Helper file has been parsed successfully
 console.log("<<<<< MMM-AlphaESS node_helper.js: FILE PARSED >>>>>");

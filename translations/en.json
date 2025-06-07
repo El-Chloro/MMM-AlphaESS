@@ -1,0 +1,11 @@
+{
+  "LOADING": "Loading...",
+  "ERROR_CONFIG": "Please configure `appId`, `appSecret`, and `sysSn`.",
+  "ERROR_FETCH": "Error fetching data:",
+  "WAITING_FOR_DATA": "Waiting for data...",
+  "LOAD": "Load",
+  "PV_NOW": "PV Now",
+  "LOAD_DAY": "Daily Load",
+  "PV_DAY": "Daily PV",
+  "BATTERY": "Battery"
+}
