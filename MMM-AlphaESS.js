@@ -88,7 +88,7 @@ Module.register("MMM-AlphaESS", {
 		}
 	},
 
-	// getDom wird komplett überarbeitet
+	// getDom wird angepasst
 	getDom: function() {
 		const wrapper = document.createElement("div");
 		wrapper.className = "alphaess-wrapper";
@@ -114,7 +114,6 @@ Module.register("MMM-AlphaESS", {
 			return wrapper;
 		}
 
-		// Datenanzeige
 		const rtData = this.realtimeData;
 		const smData = this.summaryData;
 
@@ -144,18 +143,57 @@ Module.register("MMM-AlphaESS", {
 			`;
 			boxContainer.appendChild(box);
 		};
+		
+		// NEU: Spezialisierte Funktion für die Tagesverbrauch-Box
+		const createLoadBox = (iconClass, label, value, unit, options = {}) => {
+			const { precision = 1, eLoad = 0, eInput = 0 } = options;
+			if (value === null || value === undefined) return;
 
-		// NEU: Eigene Hilfsfunktion für die Akku-Box
+			const box = document.createElement("div");
+			box.className = "data-box";
+			const formattedValue = (typeof value === 'number') ? value.toFixed(precision) : value;
+			let iconHtml = this.config.useIcons ? `<div class="box-icon"><i class="fas ${iconClass}"></i></div>` : '';
+
+			let barHtml = '';
+			let selfPercent = 0;
+			let gridPercent = 0;
+
+			// Berechnung der Anteile für den Balken
+			if (eLoad > 0) {
+				const selfUsage = Math.max(0, eLoad - eInput);
+				selfPercent = (selfUsage / eLoad) * 100;
+				gridPercent = (eInput / eLoad) * 100;
+
+				// Logging für Debugging und Erweiterungen
+				Log.log(`[${this.name}] Load Mix Calculation: Total=${eLoad}, Grid=${eInput}, Self=${selfUsage.toFixed(2)} -> Self=${selfPercent.toFixed(1)}%, Grid=${gridPercent.toFixed(1)}%`);
+
+				barHtml = `
+					<div class="bar-container">
+						<div class="bar-segment green" style="width: ${selfPercent}%;"></div>
+						<div class="bar-segment orange" style="width: ${gridPercent}%;"></div>
+					</div>
+				`;
+			}
+			
+			box.innerHTML = `
+				${iconHtml}
+				<div class="box-value">${formattedValue} ${unit}</div>
+				<div class="box-label">${label}</div>
+				${barHtml}
+			`;
+			boxContainer.appendChild(box);
+		};
+
+		// Funktion für die Akku-Box (unverändert)
 		const createBatteryBox = (iconClass, label, value, unit, options = {}) => {
 			const { color = '#444', precision = 1 } = options;
 			if (value === null || value === undefined) return;
 			
 			const box = document.createElement("div");
-			box.className = "data-box full-width"; // Nutzt die neue CSS-Klasse
+			box.className = "data-box full-width";
 			const formattedValue = (typeof value === 'number') ? value.toFixed(precision) : value;
 			let iconHtml = this.config.useIcons ? `<div class="box-icon"><i class="fas ${iconClass}"></i></div>` : '';
 
-			// HTML mit dem neuen Ladebalken
 			box.innerHTML = `
 				${iconHtml}
 				<div class="box-value">${formattedValue} ${unit}</div>
@@ -171,25 +209,24 @@ Module.register("MMM-AlphaESS", {
 		const currentLoad_kW = rtData?.pload / 1000;
 		const currentPV_kW = rtData?.ppv / 1000;
 		const todayLoad = smData?.eload;
+		const todayGridInput = smData?.einput; // Benötigt für den neuen Balken
 		const todayProd = smData?.epvtoday;
 		const currentSOC = rtData?.soc;
 		const socColor = this.getSocColor(currentSOC);
 		
 		// Boxen in der gewünschten Reihenfolge erstellen
 		
-		// Oben Links: Verbrauch
 		createDataBox("fa-home", "Verbrauch", currentLoad_kW, "kW", { precision: this.config.kwDecimalPlaces, baseValue: rtData?.pload });
-		
-		// Oben Rechts: PV Aktuell
 		createDataBox("fa-solar-panel", "PV Aktuell", currentPV_kW, "kW", { precision: this.config.kwDecimalPlaces, baseValue: rtData?.ppv });
 
-		// Mitte Links: Tagesverbrauch
-		createDataBox("fa-plug", "Tagesverbrauch", todayLoad, "kWh", { precision: this.config.kwhDecimalPlaces, baseValue: smData?.eload });
+		// Tagesverbrauch-Box mit der neuen Funktion erstellen
+		createLoadBox("fa-plug", "Tagesverbrauch", todayLoad, "kWh", {
+			precision: this.config.kwhDecimalPlaces,
+			eLoad: todayLoad,
+			eInput: todayGridInput
+		});
 
-		// Mitte Rechts: Tages-PV
 		createDataBox("fa-chart-bar", "Tages-PV", todayProd, "kWh", { precision: this.config.kwhDecimalPlaces, baseValue: smData?.epvtoday });
-
-		// Unten (breit): Akku
 		createBatteryBox("fa-battery-full", "Akku", currentSOC, "%", { color: socColor, precision: 1 });
 		
 		wrapper.appendChild(boxContainer);

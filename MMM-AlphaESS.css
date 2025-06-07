@@ -57,8 +57,9 @@
   margin-top: 4px; /* Abstand nach oben */
 }
 
-/* NEU: Container für den prozentualen Ladebalken */
+/* Container für die prozentualen Balken */
 .bar-container {
+  display: flex; /* NEU: Flexbox für die Segmente */
   width: 90%; /* Etwas schmaler als die Box selbst */
   height: 10px; /* Dickerer Balken */
   background-color: #333; /* Hintergrund des leeren Balkens */
@@ -67,13 +68,27 @@
   overflow: hidden; /* Stellt sicher, dass der innere Radius korrekt ist */
 }
 
-/* NEU: Der farbige, wachsende Füllstand des Balkens */
+/* Der einfarbige Füllstand des Akku-Balkens */
 .bar-fill {
   height: 100%;
   width: 0%; /* Breite wird dynamisch per JS gesetzt */
   border-radius: 5px;
   /* Weiche Übergänge für Farb- und Breitenänderungen */
   transition: width 0.5s ease-in-out, background-color 0.5s ease;
+}
+
+/* NEU: Generischer Stil für die Segmente des Verbrauch-Balkens */
+.bar-segment {
+  height: 100%;
+  transition: width 0.5s ease-in-out;
+}
+
+/* NEU: Farbdefinitionen für die Segmente */
+.bar-segment.green {
+  background-color: #8BC34A; /* Grün für Eigenverbrauch */
+}
+.bar-segment.orange {
+  background-color: #FF9800; /* Orange für Netzbezug */
 }
 
 
